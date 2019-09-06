@@ -2,6 +2,9 @@ package me.idriz.mcm.core.manager;
 
 import me.idriz.mcm.core.Core;
 import me.idriz.mcm.core.data.Tournament;
+import me.idriz.mcm.core.payload.TournamentPayload;
+import me.idriz.mcm.core.redis.Channels;
+import me.idriz.mcm.core.redis.RedisManager;
 import me.idriz.mcm.core.repository.Repository;
 
 import java.util.HashMap;
@@ -20,6 +23,13 @@ public class TournamentManager {
         this.plugin = plugin;
         this.tournamentRepository = tournamentRepository;
         this.tournamentRepository.getRepositoryData().thenAcceptAsync(optional -> optional.ifPresent(tournaments::putAll));
+    }
+
+    /**
+     * @return Memory store of tournaments.
+     */
+    public Map<Integer, Tournament> getTournaments() {
+        return tournaments;
     }
 
     /**
@@ -44,11 +54,13 @@ public class TournamentManager {
     public void setSelectedTournament(Tournament selectedTournament) {
         this.selectedTournament = Optional.ofNullable(selectedTournament);
         //TODO: Send redis payload to update.
+        RedisManager.getInstance().getRedisBus().sendPayload(Channels.TOURNAMENT_SELECT, new TournamentPayload(selectedTournament));
     }
 
     public void save(Tournament tournament) {
         getTournamentRepository().save(tournament.getId(), tournament).thenRunAsync(() -> {
             //TODO: Send redis payload for saving.
+            RedisManager.getInstance().getRedisBus().sendPayload(Channels.TOURNAMENT_UPDATE, new TournamentPayload(tournament));
         });
     }
 }
