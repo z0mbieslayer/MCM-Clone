@@ -53,13 +53,15 @@ public class TournamentManager {
      */
     public void setSelectedTournament(Tournament selectedTournament) {
         this.selectedTournament = Optional.ofNullable(selectedTournament);
-        //TODO: Send redis payload to update.
         RedisManager.getInstance().getRedisBus().sendPayload(Channels.TOURNAMENT_SELECT, new TournamentPayload(selectedTournament));
     }
 
+    /**
+     * Saves tournament to repository, and publishes the changes to redis.
+     * @param tournament The tournament to save.
+     */
     public void save(Tournament tournament) {
         getTournamentRepository().save(tournament.getId(), tournament).thenRunAsync(() -> {
-            //TODO: Send redis payload for saving.
             RedisManager.getInstance().getRedisBus().sendPayload(Channels.TOURNAMENT_UPDATE, new TournamentPayload(tournament));
         });
     }

@@ -1,14 +1,16 @@
 package me.idriz.mcm.core;
 
-import me.idriz.mcm.core.data.Tournament;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import me.idriz.mcm.core.listener.redis.TournamentListener;
 import me.idriz.mcm.core.manager.TournamentManager;
 import me.idriz.mcm.core.redis.RedisManager;
-import me.idriz.mcm.core.repository.Repository;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
 public final class Core extends JavaPlugin {
+
+    public static final Gson GSON = new GsonBuilder().create();
 
     private static Core instance;
     private TournamentManager tournamentManager;
@@ -16,7 +18,10 @@ public final class Core extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
         RedisManager.create(new JedisPool());
+        RedisManager.setGson(GSON);
+
         registerListeners();
     }
 
