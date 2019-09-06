@@ -1,0 +1,6 @@
+name: MCMCore
+version: ${project.version}
+main: me.idriz.mcmclone.core.Core
+api-version: 1.13
+authors: [IdrizPelaj]
+description: The minecraft mondays core.
