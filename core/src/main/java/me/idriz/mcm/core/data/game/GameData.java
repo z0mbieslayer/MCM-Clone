@@ -26,9 +26,6 @@ public class GameData {
         return gameName;
     }
 
-    /**
-     * @return The game id.
-     */
     public int getGameId() {
         return gameId;
     }

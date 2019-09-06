@@ -6,11 +6,13 @@ import me.idriz.mcm.core.repository.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class TournamentManager {
 
     private final Core plugin;
 
+    private Optional<Tournament> selectedTournament;
     private final Repository<Integer, Tournament> tournamentRepository;
     private final Map<Integer, Tournament> tournaments = new HashMap<>();
 
@@ -21,10 +23,32 @@ public class TournamentManager {
     }
 
     /**
-     *
      * @return the tournament repository provided to the manager.
      */
     public Repository<Integer, Tournament> getTournamentRepository() {
         return tournamentRepository;
+    }
+
+    /**
+     * The selected tournament will act as a universal tournament that all games use.
+     * This means all games will initially start with the selected tournament(usually the tournament is selected by a command like /select [id] in a hub server).
+     * @return
+     */
+    public Optional<Tournament> getSelectedTournament() {
+        return selectedTournament;
+    }
+
+    /**
+     * @param selectedTournament The tournament selected.
+     */
+    public void setSelectedTournament(Tournament selectedTournament) {
+        this.selectedTournament = Optional.ofNullable(selectedTournament);
+        //TODO: Send redis payload to update.
+    }
+
+    public void save(Tournament tournament) {
+        getTournamentRepository().save(tournament.getId(), tournament).thenRunAsync(() -> {
+            //TODO: Send redis payload for saving.
+        });
     }
 }
